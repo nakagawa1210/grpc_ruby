@@ -1,5 +1,6 @@
 #!/bin/bash
-source ~/.bash_profile
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 TIME=$(date "+%Y%m%d_%H%M")
@@ -26,5 +27,5 @@ kill -INT $SRVID
 
 ruby cal.rb log/$3$1_$2_$TIME.log
 
-echo log/$3$1_$2_$TIME.log >> log/latest_file.log
+echo $3$1_$2_$TIME.log >> log/latest_file.log
 

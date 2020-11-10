@@ -1,8 +1,21 @@
 #!/bin/bash
-while read line
+while read filename
 do
-    FILE=$line
-    gnuplot
-    plot "$FILE"every ::1 using 1:2
-done < time_result/latest_file.log
-gnuplot
+    gnuplot -persist <<-EOFMarker
+    set datafile separator ","
+    set terminal png
+    set output "log/graph/$filename-snd.png"
+    plot "log/$filename.csv" every ::1 using 1:2
+    set terminal png
+    set output "log/graph/$filename-svr.png"
+    plot "log/$filename.csv" every ::1 using 1:3
+    set terminal png
+    set output "log/graph/$filename-rcv.png"
+    plot "log/$filename.csv" every ::1 using 1:4
+    set terminal png
+    set output "log/graph/$filename-all.png"
+    plot "log/$filename.csv" every ::1 using 1:5
+EOFMarker
+done < log/latest_file.log
+
+:>| log/latest_file.log
