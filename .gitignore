@@ -151,3 +151,9 @@ BenchmarkDotNet.Artifacts/
 
 # pyenv config
 .python-version
+
+# nakagawa
+lib/
+log/
+*~
+
