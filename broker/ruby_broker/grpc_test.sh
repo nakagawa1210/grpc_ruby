@@ -1,4 +1,6 @@
 #!/bin/bash
+source ~/.bash_profile
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 TIME=$(date "+%Y%m%d_%H%M")
 
