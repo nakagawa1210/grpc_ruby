@@ -1,87 +1,30 @@
-gRPC - An RPC library and framework
+gRPC_ruby 
 ===================================
 
-gRPC is a modern, open source, high-performance remote procedure call (RPC) framework that can run anywhere. gRPC enables client and server applications to communicate transparently, and simplifies the building of connected systems.
+gRPC を用いてRuby で作成したメッセージブローカ
 
-<table>
-  <tr>
-    <td><b>Homepage:</b></td>
-    <td><a href="https://grpc.io/">grpc.io</a></td>
-  </tr>
-  <tr>
-    <td><b>Mailing List:</b></td>
-    <td><a href="https://groups.google.com/forum/#!forum/grpc-io">grpc-io@googlegroups.com</a></td>
-  </tr>
-</table>
+grpc_ruby/broker 以下のディレクトリに作成したプログラムをおいている．
+各ディレクトリとファイルの説明
+# protos ディレクトリ:purotocol buffer で書かれたファイルが存在するディレクトリ
+## msg_broker.proto:gRPC で使用するサービス定義を行っている．
+# ruby_broker ディレクトリ:作成したプログラムとプログラムを実行するシェルスクリプトが存在するディレクトリ
+## cal.rb:プログラムが作成した.log ファイルから差を計算しlogディレクトリ以下に.csv ファイルとして出力する．
+## compile.sh:.proto ファイルをコンパイルするシェルスクリプト
+## grpc_test.sh:引数にメッセージ送信回数とデータのサイズ(ｋB)をとり，プログラムを実行するシェルスクリプト
+## make_graph.sh:.csv ファイルをgnuplotを用いて.png の図を作成するシェルスクリプト
+## recv_client.rb:メッセージを受信し，測定した時刻を.log ファイルとしてlogディレクトリ以下に出力する．
+## send_client.rb:メッセージをサーバに送信する．
+## server.rb:メッセージを送受信するサーバ
+## ssh_test.sh:sshでhsc1に接続し，メッセージの送受信100000回を1kB，2kB，4kBの三回実行するシェルスクリプト
 
-[![Join the chat at https://gitter.im/grpc/grpc](https://badges.gitter.im/grpc/grpc.svg)](https://gitter.im/grpc/grpc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
-# To start using gRPC
-
-To maximize usability, gRPC supports the standard method for adding dependencies to a user's chosen language (if there is one).
-In most languages, the gRPC runtime comes as a package available in a user's language package manager.
-
-For instructions on how to use the language-specific gRPC runtime for a project, please refer to these documents
-
- * [C++](src/cpp): follow the instructions under the `src/cpp` directory
- * [C#](src/csharp): NuGet package `Grpc`
- * [Dart](https://github.com/grpc/grpc-dart): pub package `grpc`
- * [Go](https://github.com/grpc/grpc-go): `go get google.golang.org/grpc`
- * [Java](https://github.com/grpc/grpc-java): Use JARs from Maven Central Repository
- * [Kotlin](https://github.com/grpc/grpc-kotlin): Use JARs from Maven Central Repository
- * [Node](https://github.com/grpc/grpc-node): `npm install grpc`
- * [Objective-C](src/objective-c): Add `gRPC-ProtoRPC` dependency to podspec
- * [PHP](src/php): `pecl install grpc`
- * [Python](src/python/grpcio): `pip install grpcio`
- * [Ruby](src/ruby): `gem install grpc`
- * [WebJS](https://github.com/grpc/grpc-web): follow the grpc-web instructions
-
-Per-language quickstart guides and tutorials can be found in the [documentation section on the grpc.io website](https://grpc.io/docs/). Code examples are available in the [examples](examples) directory.
-
-Precompiled bleeding-edge package builds of gRPC `master` branch's `HEAD` are uploaded daily to [packages.grpc.io](https://packages.grpc.io).
-
-# To start developing gRPC
-
-Contributions are welcome!
-
-Please read [How to contribute](CONTRIBUTING.md) which will guide you through the entire workflow of how to build the source code, how to run the tests, and how to contribute changes to
-the gRPC codebase.
-The "How to contribute" document also contains info on how the contribution process works and contains best practices for creating contributions.
-
-# Troubleshooting
-
-Sometimes things go wrong. Please check out the [Troubleshooting guide](TROUBLESHOOTING.md) if you are experiencing issues with gRPC.
-
-# Performance 
-
-See the [Performance dashboard](https://performance-dot-grpc-testing.appspot.com/explore?dashboard=5652536396611584) for performance numbers of master branch daily builds.
-
-# Concepts
-
-See [gRPC Concepts](CONCEPTS.md)
-
-# About This Repository
-
-This repository contains source code for gRPC libraries implemented in multiple languages written on top of a shared C core library [src/core](src/core).
-
-Libraries in different languages may be in various states of development. We are seeking contributions for all of these libraries:
-
-| Language                | Source                              |
-|-------------------------|-------------------------------------|
-| Shared C [core library] | [src/core](src/core)                |
-| C++                     | [src/cpp](src/cpp)                  |
-| Ruby                    | [src/ruby](src/ruby)                |
-| Python                  | [src/python](src/python)            |
-| PHP                     | [src/php](src/php)                  |
-| C# (core library based) | [src/csharp](src/csharp)            |
-| Objective-C             | [src/objective-c](src/objective-c)  |
-
-| Language                | Source repo                                          |
-|-------------------------|------------------------------------------------------|
-| Java                    | [grpc-java](https://github.com/grpc/grpc-java)       |
-| Kotlin                  | [grpc-kotlin](https://github.com/grpc/grpc-kotlin)   |
-| Go                      | [grpc-go](https://github.com/grpc/grpc-go)           |
-| NodeJS                  | [grpc-node](https://github.com/grpc/grpc-node)       |
-| WebJS                   | [grpc-web](https://github.com/grpc/grpc-web)         |
-| Dart                    | [grpc-dart](https://github.com/grpc/grpc-dart)       |
-| .NET (pure C# impl.)    | [grpc-dotnet](https://github.com/grpc/grpc-dotnet)   |
+実行手順
+以下のコマンドでクローンする．
+git clone https://github.com/nakagawa1210/grpc_ruby.git
+ruby_broker ディレクトリに移動する．
+cd grpc_ruby/broker/ruby_broker
+compile.sh を実行する．
+./compile.sh
+grpc_test.sh を実行する．以下のコマンドの場合メッセージ数100，データサイズ1kBで実行する．
+./grpc_test.sh 100 1
+make_graph.sh を実行する．log/graph ディレクトリにpng 形式で作成された図が保存される．
+./make_graph.sh
