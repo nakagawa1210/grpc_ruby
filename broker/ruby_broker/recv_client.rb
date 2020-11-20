@@ -16,28 +16,26 @@ def main
   @length = 1
   @command = 2
   @dest = 3
-  @msgid = count
- 
-  @data = stub.check_id(Msg::IdData.new(length: @length,
-                                        command: @command,
-                                        dest: @dest,
-                                        msgid: @msgid))
-  @recvdata.push @data
+  @msgid = 4
+
+
+  @iddata = Msg::IdData.new(length: @length,
+                            command: @command,
+                            dest: @dest,
+                            msgid: @msgid)
+  
+  response = stub.check_id(@iddata)
 
   loop do
-    @time.push Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    @data = stub.recv_msg(Msg::IdData.new(length: @length,
-                                          command: @command,
-                                          dest: @dest,
-                                          msgid: @msgid))
+    @data = stub.recv_msg(@iddata)
+    @data.T_4 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     @recvdata.push @data
-    break if @data.dest == @msgid-1
+    break if @data.dest == count-1
   end
   
-  @time.push Process.clock_gettime(Process::CLOCK_MONOTONIC)
   puts "num,send,svr_in,svr_out,recv"
     @recvdata.each do |s|
-      puts "#{s.dest},#{s.length},#{s.command},#{s.msgid},#{@time.shift}"
+      puts "#{s.dest},#{s.T_1},#{s.T_2},#{s.T_3},#{s.T_4}"
     end
 end
 

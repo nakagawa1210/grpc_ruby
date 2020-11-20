@@ -19,7 +19,11 @@ class MakeSendData
       @senddata.push Msg::SendData.new(length: length,
                                        command: command,
                                        dest: dest,
-                                       message: message)
+                                       message: message,
+                                       T_1: 1,
+                                       T_2: 2,
+                                       T_3: 3,
+                                       T_4: 4)
     end
   end
 
@@ -32,7 +36,7 @@ class MakeSendData
   def each
     return enum_for(:each) unless block_given?
     @senddata.each do |data|
-      data.length = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      data.T_1 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       yield  data
     end
   end

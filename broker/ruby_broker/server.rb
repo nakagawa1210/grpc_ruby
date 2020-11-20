@@ -12,39 +12,40 @@ class MsgServer < Msg::Frame::Service
   end
 
   def makedata
-    time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    
     recvdata = $array.shift
     
     Msg::RecvData.new(length: recvdata.length,
                       command: recvdata.command,
                       dest: recvdata.dest,
-                      msgid: time,
-                      message: recvdata.message)
+                      msgid: 1,
+                      message: recvdata.message,
+                      T_1: recvdata.T_1,
+                      T_2: recvdata.T_2,
+                      T_3: Process.clock_gettime(Process::CLOCK_MONOTONIC),
+                      T_4: recvdata.T_4)
   end
   
   def check_id(iddata, _unused_call)
     @ID.push iddata
-    
-    loop do 
-      break if $array.length != 0
-    end
 
-    return makedata
+    Msg::Response.new(length: 1,
+                      command: 2,
+                      dest: 3,
+                      msgid: 4,
+                      rescode: 5)
   end
 
-  def recv_msg(checkdata,_unused_call)
+  def recv_msg(iddata,_unused_call)
     loop do
       break if $array.length != 0
     end
+    
     return makedata
   end
   
   def send_msg(data)
     data.each_remote_read do |senddata|
-      # timer_start
-      time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-      senddata.command = time
+      senddata.T_2 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       
       $array.push senddata
     end
@@ -54,20 +55,6 @@ class MsgServer < Msg::Frame::Service
                       dest: 3,
                       msgid: 4,
                       rescode: 5)
-  end
-
-  def time_result(iddata, _unused_call)
-   
-    
-    Msg::Response.new(length: iddata.length,
-                      command: iddata.command,
-                      dest: iddata.dest,
-                      msgid: 0,
-                      rescode: iddata.length)
-  end
-
-  def shut_down(sig, _unused_call)
-    Msg::Void.new()
   end
 end
 
