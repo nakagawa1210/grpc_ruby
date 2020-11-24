@@ -15,8 +15,8 @@ bundle exec ruby send_client.rb $1 $2
 
 while(true)
 do
-    if [ "$(ps -p $RECVID |wc -l)" = "1" ]; then
-	break
+    if [ $(ps -p $RECVID | wc -l) = "1" ]; then
+    break
     fi
     sleep 1
 done
