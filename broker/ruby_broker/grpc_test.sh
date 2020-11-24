@@ -1,7 +1,12 @@
 #!/bin/bash
-export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
-cd "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -x  $HOME/.rbenv/bin/rbenv ]; then
+    # rbenv
+    PATH=$HOME/.rbenv/bin:$PATH
+    eval "$(rbenv init -)"
+    RUBY_DISPATCHER="rbenv"
+fi
+
+cd "$(dirname "$0")"
 
 TIME=$(date "+%Y%m%d_%H%M")
 
