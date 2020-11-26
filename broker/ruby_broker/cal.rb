@@ -7,8 +7,8 @@ def main
   filename = file + '.csv'
   CSV.open(filename,'w') do |test|
     test << data_list.shift
-    data_list.each do |data|
-      test << [data[0],
+    data_list.each.with_index(1) do |data,i|
+      test << [i,
                data[2].to_f - data[1].to_f,
                data[3].to_f - data[2].to_f,
                data[4].to_f - data[3].to_f,
