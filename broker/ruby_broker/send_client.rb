@@ -7,9 +7,8 @@ require 'msg_broker_services_pb'
 
 class MakeSendData
   def initialize(count, datasize)
-    @count = count
     @senddata = []
-    (0 ... @count).each do |num|
+    (0 ... count).each do |num|
       message = makepaket(datasize)
 
       length = message.length
@@ -49,9 +48,13 @@ def main()
   hostname = 'localhost:50051'
   stub = Msg::Frame::Stub.new(hostname, :this_channel_is_insecure)
 
-  senddata = MakeSendData.new(count,datasize)
+  loop_count = count / 5
+  
+  loop_count.times do
+    senddata = MakeSendData.new(5,datasize)
 
-  response = stub.send_msg(senddata.each)
+    response = stub.send_msg(senddata.each)
+  end
 end
 
 main

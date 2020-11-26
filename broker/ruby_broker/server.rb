@@ -40,7 +40,7 @@ class MsgServer < Msg::Frame::Service
       break if $array.length != 0
     end
     
-    return makedata
+    makedata
   end
   
   def send_msg(data)

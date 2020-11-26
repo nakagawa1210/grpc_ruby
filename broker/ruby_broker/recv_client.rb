@@ -11,26 +11,25 @@ def main
   stub = Msg::Frame::Stub.new(hostname, :this_channel_is_insecure)
 
   @recvdata = []
-  @time = []
   
-  @length = 1
-  @command = 2
-  @dest = 3
-  @msgid = 4
+  length = 1
+  command = 2
+  dest = 3
+  msgid = 4
 
-
-  @iddata = Msg::IdData.new(length: @length,
-                            command: @command,
-                            dest: @dest,
-                            msgid: @msgid)
+  @iddata = Msg::IdData.new(length: length,
+                            command: command,
+                            dest: dest,
+                            msgid: msgid)
   
   response = stub.check_id(@iddata)
 
   loop do
-    @data = stub.recv_msg(@iddata)
-    @data.T_4 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    @recvdata.push @data
-    break if @data.dest == count-1
+    data = stub.recv_msg(@iddata)
+    data.T_4 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    @recvdata.push data
+    break if @recvdata.length == count
+    #break if data.dest == count-1
   end
   
   puts "num,send,svr_in,svr_out,recv"
