@@ -35,6 +35,7 @@ class MakeSendData
   def each
     return enum_for(:each) unless block_given?
     @senddata.each do |data|
+      #sleep(0.001)
       data.T_1 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       yield  data
     end
@@ -43,18 +44,24 @@ end
 
 
 def main()
-  count = ARGV.size > 0 ?  ARGV[0].to_i : 10
+  count = ARGV.size > 0 ?  ARGV[0].to_i : 100
   datasize = ARGV.size > 1 ?  ARGV[1].to_i : 1
   hostname = 'localhost:50051'
   stub = Msg::Frame::Stub.new(hostname, :this_channel_is_insecure)
 
-  loop_count = count / 5
+  window_size = 10
+  
+  loop_count = count / window_size
   
   loop_count.times do
-    senddata = MakeSendData.new(5,datasize)
+    senddata = MakeSendData.new(window_size,datasize)
 
     response = stub.send_msg(senddata.each)
   end
+  
+  #senddata = MakeSendData.new(count,datasize)
+
+  #response = stub.send_msg(senddata.each)
 end
 
 main

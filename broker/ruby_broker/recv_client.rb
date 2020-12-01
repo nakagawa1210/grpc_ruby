@@ -25,6 +25,7 @@ def main
   response = stub.check_id(@iddata)
 
   loop do
+    #@time_b_call.push Process.clock_gettime(Process::CLOCK_MONOTONIC)
     data = stub.recv_msg(@iddata)
     data.T_4 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     @recvdata.push data
