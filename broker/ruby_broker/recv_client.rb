@@ -17,26 +17,27 @@ def main
   dest = 3
   msgid = 4
 
-  @iddata = Msg::IdData.new(length: length,
-                            command: command,
-                            dest: dest,
-                            msgid: msgid)
+  iddata = Msg::IdData.new(length: length,
+                           command: command,
+                           dest: dest,
+                           msgid: msgid)
   
-  response = stub.check_id(@iddata)
-
-  loop do
-    #@time_b_call.push Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    data = stub.recv_msg(@iddata)
-    data.T_4 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    @recvdata.push data
+  response = stub.check_id(iddata)
+  
+  loop do 
+    recv = stub.recv_msg(iddata)
+    recv.each_entry do |data|
+      data.T_4 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      
+      @recvdata.push data
+    end
     break if @recvdata.length == count
-    #break if data.dest == count-1
   end
   
   puts "num,send,svr_in,svr_out,recv"
-    @recvdata.each do |s|
-      puts "#{s.dest},#{s.T_1},#{s.T_2},#{s.T_3},#{s.T_4}"
-    end
+  @recvdata.each do |s|
+    puts "#{s.dest},#{s.T_1},#{s.T_2},#{s.T_3},#{s.T_4}"
+  end
 end
 
 main

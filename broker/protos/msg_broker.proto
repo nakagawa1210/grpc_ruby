@@ -4,8 +4,8 @@ package msg;
 
 service Frame {
   rpc CheckId (IdData) returns (Response){}
-  rpc RecvMsg (IdData) returns (RecvData){}
-  rpc SendMsg (stream SendData) returns (Response) {}
+  rpc RecvMsg (IdData) returns (stream RecvData){}
+  rpc SendMsg (stream SendData) returns (Response){}
 }
 
 // T_1,T_2,T_3,T_4 is timestamp

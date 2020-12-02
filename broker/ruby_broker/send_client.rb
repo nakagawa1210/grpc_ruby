@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 require 'grpc'
 require 'msg_broker_services_pb'
 
-class MakeSendData
+class MakeSendArray
   def initialize(count, datasize)
     @senddata = []
     (0 ... count).each do |num|
@@ -35,7 +35,6 @@ class MakeSendData
   def each
     return enum_for(:each) unless block_given?
     @senddata.each do |data|
-      #sleep(0.001)
       data.T_1 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       yield  data
     end
@@ -49,12 +48,12 @@ def main()
   hostname = 'localhost:50051'
   stub = Msg::Frame::Stub.new(hostname, :this_channel_is_insecure)
 
-  window_size = 10
+  window_size = 1000
   
   loop_count = count / window_size
   
   loop_count.times do
-    senddata = MakeSendData.new(window_size,datasize)
+    senddata = MakeSendArray.new(window_size,datasize)
 
     response = stub.send_msg(senddata.each)
   end

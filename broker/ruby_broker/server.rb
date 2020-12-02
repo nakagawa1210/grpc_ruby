@@ -5,26 +5,36 @@ $LOAD_PATH.unshift(lib_dir) unless $LOAD_PATH.include?(lib_dir)
 require 'grpc'
 require 'msg_broker_services_pb'
 
+class Recv
+  def initialize()
+    
+  end
+
+  def each
+    return enum_for(:each) unless block_given?
+    loop do 
+      recvdata = $array.shift
+      time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      
+      yield Msg::RecvData.new(length: recvdata.length,
+                              command: recvdata.command,
+                              dest: recvdata.dest,
+                              msgid: 1,
+                              message: recvdata.message,
+                              T_1: recvdata.T_1,
+                              T_2: recvdata.T_2,
+                              T_3: time,
+                              T_4: recvdata.T_4)
+      break if $array.length == 0
+    end
+  end
+end
+
 class MsgServer < Msg::Frame::Service
   def initialize()
     $array = []
     $array_mu = Mutex.new 
     @ID = []
-    @time = []
-  end
-
-  def makedata
-    recvdata = $array.shift
-    time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    Msg::RecvData.new(length: recvdata.length,
-                      command: recvdata.command,
-                      dest: recvdata.dest,
-                      msgid: 1,
-                      message: recvdata.message,
-                      T_1: recvdata.T_1,
-                      T_2: recvdata.T_2,
-                      T_3: time,
-                      T_4: recvdata.T_4)
   end
   
   def check_id(iddata, _unused_call)
@@ -37,11 +47,7 @@ class MsgServer < Msg::Frame::Service
                       rescode: 5)
   end
 
-  def recv_msg(iddata,_unused_call)
-    #loop do
-    #  break if $array.length != 0
-    #end
-    
+  def recv_msg(iddata, _call)
     $array_mu.lock
     begin
       while $array.length == 0
@@ -49,7 +55,7 @@ class MsgServer < Msg::Frame::Service
         sleep(0.01)
         $array_mu.lock
       end
-      makedata
+      Recv.new().each
     ensure
       $array_mu.unlock
     end
@@ -60,18 +66,11 @@ class MsgServer < Msg::Frame::Service
     begin
       data.each_remote_read do |senddata|
         senddata.T_2 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-      
         $array.push senddata
-        #time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-        #@time.push time
       end
     ensure
       $array_mu.unlock
     end
-    
-    #loop do
-    #  break if $array.length < 1
-    #end
     
     Msg::Response.new(length: 1,
                       command: 2,
