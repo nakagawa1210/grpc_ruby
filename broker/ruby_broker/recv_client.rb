@@ -12,6 +12,25 @@ def main
 
   @recvdata = []
   
+  (0 ... count).each do |num|
+    message = ""
+    
+    length = message.length
+    command = 1
+    dest = num
+    msgid = 2
+      
+    @recvdata.push Msg::RecvData.new(length: length,
+                                     command: command,
+                                     dest: dest,
+                                     msgid: msgid,
+                                     message: message,
+                                     T_1: 1,
+                                     T_2: 2,
+                                     T_3: 3,
+                                     T_4: 4)
+  end
+  
   length = 1
   command = 2
   dest = 3
@@ -23,15 +42,18 @@ def main
                            msgid: msgid)
   
   response = stub.check_id(iddata)
+
+  @n = 0
   
-  loop do 
+  loop do
     recv = stub.recv_msg(iddata)
     recv.each_entry do |data|
       data.T_4 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       
-      @recvdata.push data
+      @recvdata[@n] = data
+      @n += 1
     end
-    break if @recvdata.length == count
+    break if @n == count
   end
   
   puts "num,send,svr_in,svr_out,recv"

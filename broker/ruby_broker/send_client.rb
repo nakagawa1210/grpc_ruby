@@ -48,13 +48,13 @@ def main()
   hostname = 'localhost:50051'
   stub = Msg::Frame::Stub.new(hostname, :this_channel_is_insecure)
 
-  window_size = 1000
+  window_size = 50000
   
   loop_count = count / window_size
+
+  senddata = MakeSendArray.new(window_size,datasize)
   
   loop_count.times do
-    senddata = MakeSendArray.new(window_size,datasize)
-
     response = stub.send_msg(senddata.each)
   end
   
