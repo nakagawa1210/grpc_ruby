@@ -27,20 +27,16 @@ class Recv
                               T_4: recvdata.T_4)
       break if $array.length == 0
     end
+    $array_mu.unlock
   end
 end
+
+
 
 class MsgServer < Msg::Frame::Service
   def initialize()
     $array = []
-    $array_mu = Mutex.new
-    $re_mu_num = 0
-    $re_mu_when = []
-    $se_mu_num = 0
-    $se_mu_when = []   
-    $max_array = 0
-    $max_array_num = 0
-    $data_num = 0
+    $array_mu = Mutex.new()
     @ID = []
   end
   
@@ -59,33 +55,22 @@ class MsgServer < Msg::Frame::Service
     begin
       while $array.length == 0
         $array_mu.unlock
-        sleep(0.01)
+        sleep(0.001)
         $array_mu.lock
       end
-      $re_mu_num += 1
-      $re_mu_when.push $data_num 
       Recv.new().each
     ensure
-      $array_mu.unlock
+      #$array_mu.unlock
     end
   end
   
   def send_msg(data)
     $array_mu.lock
-    $se_mu_num += 1
-    $se_mu_when.push $data_num
     begin
       data.each_remote_read do |senddata|
         senddata.T_2 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         $array.push senddata
-        $data_num += 1
-        
-        if $array.length > $max_array then
-          $max_array = $array.length
-          $max_array_num = $data_num
-        end
-        
-        end
+      end
     ensure
       $array_mu.unlock
     end
@@ -104,12 +89,6 @@ def main ()
   s.handle(MsgServer.new())
 
   s.run_till_terminated_or_interrupted([1, 'int', 'SIGQUIT'])
-  puts "send mutex #{$se_mu_num},recv mutex #{$re_mu_num},max_array #{$max_array}, max_array_num #{$max_array_num},data_num #{$data_num}"
-  
-  puts "re_mu"
-  $re_mu_when.each do |re|
-    puts re
-  end
 end
 
 main

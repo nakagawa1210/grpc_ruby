@@ -47,20 +47,22 @@ def main()
   datasize = ARGV.size > 1 ?  ARGV[1].to_i : 1
   hostname = 'localhost:50051'
   stub = Msg::Frame::Stub.new(hostname, :this_channel_is_insecure)
-
-  window_size = 50000
+  
+  window_size = 100000
+  
+  if (count < window_size)
+    puts"count < window_size"
+    exit
+  end
   
   loop_count = count / window_size
 
   senddata = MakeSendArray.new(window_size,datasize)
-  
+
   loop_count.times do
     response = stub.send_msg(senddata.each)
   end
-  
-  #senddata = MakeSendData.new(count,datasize)
 
-  #response = stub.send_msg(senddata.each)
 end
 
 main
