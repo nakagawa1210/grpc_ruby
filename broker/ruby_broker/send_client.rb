@@ -45,10 +45,9 @@ end
 def main()
   count = ARGV.size > 0 ?  ARGV[0].to_i : 100
   datasize = ARGV.size > 1 ?  ARGV[1].to_i : 1
+  window_size = ARGV.size > 2 ?  ARGV[2].to_i : 1
   hostname = 'localhost:50051'
   stub = Msg::Frame::Stub.new(hostname, :this_channel_is_insecure)
-  
-  window_size = 100000
   
   if (count < window_size)
     puts"count < window_size"
