@@ -58,10 +58,9 @@ def main()
 
   senddata = MakeSendArray.new(window_size,datasize)
 
-  loop_count.times do
+  loop_count.times do |n|
     response = stub.send_msg(senddata.each)
   end
-
 end
 
 main

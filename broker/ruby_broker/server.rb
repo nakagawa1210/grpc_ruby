@@ -15,6 +15,8 @@ class Recv
     loop do 
       recvdata = $array.shift
       time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
+      puts "#{recvdata.dest},#{$array.length}"
       
       yield Msg::RecvData.new(length: recvdata.length,
                               command: recvdata.command,
@@ -25,6 +27,7 @@ class Recv
                               T_2: recvdata.T_2,
                               T_3: time,
                               T_4: recvdata.T_4)
+      
       break if $array.length == 0
     end
     $array_mu.unlock
