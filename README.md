@@ -31,6 +31,7 @@ ssh_test.sh:sshでhsc1に接続し，メッセージの送受信100000回を1kB�
 (1) gRPC 用の gem を以下のコマンドでインストールする．
 
 $ gem install grpc
+
 $ gem install grpc-tools
 
 (2) 以下のコマンドでクローンする．
