@@ -46,9 +46,9 @@ $ cd grpc_ruby/broker/ruby_broker
 
 $ ./compile.sh
 
-(4) grpc_test.sh を実行する．以下のコマンドの場合送信メッセージ数100，データサイズ1kB，windowsize 1で実行し，ファイル名が「test_100_1_[実行した年月日]_[実行した時間]」になる．
+(4) grpc_test.sh を実行する．以下のコマンドの場合送信メッセージ数100，データサイズ1KB，windowsize 10で実行し，ファイル名が「test_100_1_<実行した年月日>_<実行した時間>」になる．
 
-$ ./grpc_test.sh 100 1 test 1
+$ ./grpc_test.sh 100 1 test 10
 
 (5) make_graph.sh を実行する．log/graph ディレクトリにpng 形式で作成された図が保存される．
 
