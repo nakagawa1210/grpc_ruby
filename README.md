@@ -28,22 +28,27 @@ server.rb:メッセージを送受信するサーバ
 ssh_test.sh:sshでhsc1に接続し，メッセージの送受信100000回を1kB，2kB，4kBの三回実行するシェルスクリプト
 
 # 実行手順
-(1) 以下のコマンドでクローンする．
+(1) gRPC 用の gem を以下のコマンドでインストールする．
 
-git clone https://github.com/nakagawa1210/grpc_ruby.git
+$ gem install grpc
+$ gem install grpc-tools
 
-(2) ruby_broker ディレクトリに移動する．
+(2) 以下のコマンドでクローンする．
 
-cd grpc_ruby/broker/ruby_broker
+$ git clone https://github.com/nakagawa1210/grpc_ruby.git
+
+(3) ruby_broker ディレクトリに移動する．
+
+$ cd grpc_ruby/broker/ruby_broker
 
 (3) compile.sh を実行する．
 
-./compile.sh
+$ ./compile.sh
 
-(4) grpc_test.sh を実行する．以下のコマンドの場合メッセージ数100，データサイズ1kBで実行する．
+(4) grpc_test.sh を実行する．以下のコマンドの場合送信メッセージ数100，データサイズ1kB，windowsize 1で実行し，ファイル名が「test_100_1_[実行した年月日]_[実行した時間]」になる．
 
-./grpc_test.sh 100 1
+$ ./grpc_test.sh 100 1 test 1
 
 (5) make_graph.sh を実行する．log/graph ディレクトリにpng 形式で作成された図が保存される．
 
-./make_graph.sh
+$ ./make_graph.sh
