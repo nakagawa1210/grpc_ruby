@@ -48,7 +48,8 @@ def main
   loop do
     recv = stub.recv_msg(iddata)
     recv.each_entry do |data|
-      data.T_4 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      data.T_4 = time
       
       @recvdata[@n] = data
       @n += 1

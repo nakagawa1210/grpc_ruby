@@ -16,7 +16,7 @@ class Recv
       recvdata = $array.shift
       time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
-      puts "#{recvdata.dest},#{$array.length}"
+#      puts "#{recvdata.dest},#{$array.length}"
       
       yield Msg::RecvData.new(length: recvdata.length,
                               command: recvdata.command,
@@ -71,7 +71,8 @@ class MsgServer < Msg::Frame::Service
     $array_mu.lock
     begin
       data.each_remote_read do |senddata|
-        senddata.T_2 = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        time =  Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        senddata.T_2 = time
         $array.push senddata
       end
     ensure
