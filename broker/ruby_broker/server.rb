@@ -12,8 +12,18 @@ class Recv
 
   def each
     return enum_for(:each) unless block_given?
-    loop do 
-      recvdata = $array.shift
+    loop do
+      $array_mu.lock
+      begin
+        while $array.length == 0
+          $array_mu.unlock
+          sleep(0.001)
+          $array_mu.lock
+        end
+        recvdata = $array.shift
+      ensure
+        $array_mu.unlock
+      end
       time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
 #      puts "#{recvdata.dest},#{$array.length}"
@@ -30,7 +40,6 @@ class Recv
       
       break if $array.length == 0
     end
-    $array_mu.unlock
   end
 end
 
@@ -54,29 +63,19 @@ class MsgServer < Msg::Frame::Service
   end
 
   def recv_msg(iddata, _call)
-    $array_mu.lock
-    begin
-      while $array.length == 0
-        $array_mu.unlock
-        sleep(0.001)
-        $array_mu.lock
-      end
-      Recv.new().each
-    ensure
-      #$array_mu.unlock
-    end
+    Recv.new().each
   end
   
   def send_msg(data)
-    $array_mu.lock
-    begin
-      data.each_remote_read do |senddata|
-        time =  Process.clock_gettime(Process::CLOCK_MONOTONIC)
-        senddata.T_2 = time
+    data.each_remote_read do |senddata|
+      time =  Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      senddata.T_2 = time
+      $array_mu.lock
+      begin
         $array.push senddata
+      ensure
+        $array_mu.unlock
       end
-    ensure
-      $array_mu.unlock
     end
     
     Msg::Response.new(length: 1,
