@@ -13,32 +13,30 @@ class Recv
   def each
     return enum_for(:each) unless block_given?
     loop do
+      while $array.length == 0
+        sleep(0.001)
+      end
       $array_mu.lock
       begin
-        while $array.length == 0
-          $array_mu.unlock
-          sleep(0.001)
-          $array_mu.lock
-        end
         recvdata = $array.shift
-      ensure
-        $array_mu.unlock
-      end
-      time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+        time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
-#      puts "#{recvdata.dest},#{$array.length}"
+        #      puts "#{recvdata.dest},#{$array.length}"
       
-      yield Msg::RecvData.new(length: recvdata.length,
-                              command: recvdata.command,
-                              dest: recvdata.dest,
-                              msgid: 1,
-                              message: recvdata.message,
-                              T_1: recvdata.T_1,
-                              T_2: recvdata.T_2,
-                              T_3: time,
-                              T_4: recvdata.T_4)
-      
-      break if $array.length == 0
+        yield Msg::RecvData.new(length: recvdata.length,
+                                command: recvdata.command,
+                                dest: recvdata.dest,
+                                msgid: 1,
+                                message: recvdata.message,
+                                T_1: recvdata.T_1,
+                                T_2: recvdata.T_2,
+                                T_3: time,
+                                T_4: recvdata.T_4)
+        
+        break if $array.length == 0
+      end
+    ensure
+      $array_mu.unlock
     end
   end
 end
