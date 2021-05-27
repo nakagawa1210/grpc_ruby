@@ -16,27 +16,23 @@ class Recv
       while $array.length == 0
         sleep(0.001)
       end
-      $array_mu.lock
-      begin
-        recvdata = $array.shift
-        time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
+      recvdata = $array.shift
+      time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
         #      puts "#{recvdata.dest},#{$array.length}"
       
-        yield Msg::RecvData.new(length: recvdata.length,
-                                command: recvdata.command,
-                                dest: recvdata.dest,
-                                msgid: 1,
-                                message: recvdata.message,
-                                T_1: recvdata.T_1,
-                                T_2: recvdata.T_2,
-                                T_3: time,
-                                T_4: recvdata.T_4)
+      yield Msg::RecvData.new(length: recvdata.length,
+                              command: recvdata.command,
+                              dest: recvdata.dest,
+                              msgid: 1,
+                              message: recvdata.message,
+                              T_1: recvdata.T_1,
+                              T_2: recvdata.T_2,
+                              T_3: time,
+                              T_4: recvdata.T_4)
         
-        break if $array.length == 0
-      end
-    ensure
-      $array_mu.unlock
+      break if $array.length == 0
     end
   end
 end
@@ -46,7 +42,6 @@ end
 class MsgServer < Msg::Frame::Service
   def initialize()
     $array = []
-    $array_mu = Mutex.new()
     @ID = []
   end
   
@@ -68,12 +63,8 @@ class MsgServer < Msg::Frame::Service
     data.each_remote_read do |senddata|
       time =  Process.clock_gettime(Process::CLOCK_MONOTONIC)
       senddata.T_2 = time
-      $array_mu.lock
-      begin
-        $array.push senddata
-      ensure
-        $array_mu.unlock
-      end
+      
+      $array.push senddata  
     end
     
     Msg::Response.new(length: 1,
