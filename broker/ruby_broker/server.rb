@@ -16,6 +16,7 @@ class Recv
       while $array.length == 0
         sleep(0.001)
       end
+
       lock_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       $recv_lock += 1 if $array_mu.locked?
       #$array_mu.lock
@@ -50,7 +51,6 @@ end
 class MsgServer < Msg::Frame::Service
   def initialize()
     $array = []
-    $array_mu = Mutex.new()
     @ID = []
     $recv_lock = 0
     $send_lock = 0
@@ -80,6 +80,7 @@ class MsgServer < Msg::Frame::Service
     data.each_remote_read do |senddata|
       time =  Process.clock_gettime(Process::CLOCK_MONOTONIC)
       senddata.T_2 = time
+
       lock_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       $send_lock += 1 if $array_mu.locked?
       #$array_mu.lock
