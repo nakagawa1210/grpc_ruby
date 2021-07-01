@@ -16,27 +16,31 @@ class Recv
       while $array.length == 0
         sleep(0.001)
       end
-      $array_mu.lock
-      begin
+      lock_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      $recv_lock += 1 if $array_mu.locked?
+      #$array_mu.lock
+      lock_end = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      #begin
         recvdata = $array.shift
-        time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      #ensure
+      #  $array_mu.unlock
+      #end
+      $recv_lock_time.push [lock_start, lock_end]
 
-        #      puts "#{recvdata.dest},#{$array.length}"
+      time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      #      puts "#{recvdata.dest},#{$array.length}"
       
-        yield Msg::RecvData.new(length: recvdata.length,
-                                command: recvdata.command,
-                                dest: recvdata.dest,
-                                msgid: 1,
-                                message: recvdata.message,
-                                T_1: recvdata.T_1,
-                                T_2: recvdata.T_2,
-                                T_3: time,
-                                T_4: recvdata.T_4)
+      yield Msg::RecvData.new(length: recvdata.length,
+                              command: recvdata.command,
+                              dest: recvdata.dest,
+                              msgid: 1,
+                              message: recvdata.message,
+                              T_1: recvdata.T_1,
+                              T_2: recvdata.T_2,
+                              T_3: time,
+                              T_4: recvdata.T_4)
         
-        break if $array.length == 0
-      end
-    ensure
-      $array_mu.unlock
+      break if $array.length == 0
     end
   end
 end
@@ -48,10 +52,18 @@ class MsgServer < Msg::Frame::Service
     $array = []
     $array_mu = Mutex.new()
     @ID = []
+    $recv_lock = 0
+    $send_lock = 0
+    $recv_lock_time = []
+    $send_lock_time = []
   end
   
   def check_id(iddata, _unused_call)
     @ID.push iddata
+    puts "s_lock_start,s_lock_end,r_lock_start,r_lock_end send_lock = #{$send_lock} recv_lock = #{$recv_lock}"
+    $recv_lock_time.length.times do |n|
+      puts "#{$send_lock_time[n][0]},#{$send_lock_time[n][1]},#{$recv_lock_time[n][0]},#{$recv_lock_time[n][1]}"
+    end
 
     Msg::Response.new(length: 1,
                       command: 2,
@@ -68,12 +80,16 @@ class MsgServer < Msg::Frame::Service
     data.each_remote_read do |senddata|
       time =  Process.clock_gettime(Process::CLOCK_MONOTONIC)
       senddata.T_2 = time
-      $array_mu.lock
-      begin
+      lock_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      $send_lock += 1 if $array_mu.locked?
+      #$array_mu.lock
+      lock_end = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      #begin
         $array.push senddata
-      ensure
-        $array_mu.unlock
-      end
+      #ensure
+      #  $array_mu.unlock
+      #end
+      $send_lock_time.push [lock_start, lock_end]
     end
     
     Msg::Response.new(length: 1,
