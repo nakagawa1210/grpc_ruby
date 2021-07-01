@@ -11,6 +11,9 @@ else
     MAX=$2
 fi
 
+echo delete latestlog
+./clean_latestlog.sh
+
 echo rsync
 rsync --delete --archive ~/grpc_ruby/ nakagawa@hsc1.swlab.cs.okayama-u.ac.jp:grpc_ruby/
 
@@ -106,9 +109,15 @@ ssh nakagawa@hsc1.swlab.cs.okayama-u.ac.jp grpc_ruby/broker/ruby_broker/grpc_tes
 fi
 
 if [ $MIN -le 1  ] && [ $MAX -ge 1  ]; then
-ssh nakagawa@hsc1.swlab.cs.okayama-u.ac.jp grpc_ruby/broker/ruby_broker/grpc_test.sh 100000 1 ssh_grpc_win100_ 100
-ssh nakagawa@hsc1.swlab.cs.okayama-u.ac.jp grpc_ruby/broker/ruby_broker/grpc_test.sh 100000 1 ssh_grpc_win10_ 10
 ssh nakagawa@hsc1.swlab.cs.okayama-u.ac.jp grpc_ruby/broker/ruby_broker/grpc_test.sh 100000 1 ssh_grpc_win1_ 1
+ssh nakagawa@hsc1.swlab.cs.okayama-u.ac.jp grpc_ruby/broker/ruby_broker/grpc_test.sh 100000 2 ssh_grpc_win1_ 1
+ssh nakagawa@hsc1.swlab.cs.okayama-u.ac.jp grpc_ruby/broker/ruby_broker/grpc_test.sh 100000 4 ssh_grpc_win1_ 1
+fi
+
+if [ $MIN -le 0  ] && [ $MAX -ge 0  ]; then
+ssh nakagawa@hsc1.swlab.cs.okayama-u.ac.jp grpc_ruby/broker/ruby_broker/grpc_test.sh 10 1 ssh_grpc_win10_ 10
+ssh nakagawa@hsc1.swlab.cs.okayama-u.ac.jp grpc_ruby/broker/ruby_broker/grpc_test.sh 10 2 ssh_grpc_win10_ 10
+ssh nakagawa@hsc1.swlab.cs.okayama-u.ac.jp grpc_ruby/broker/ruby_broker/grpc_test.sh 10 4 ssh_grpc_win10_ 10
 fi
 
 echo rsync

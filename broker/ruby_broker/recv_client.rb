@@ -40,9 +40,6 @@ def main
                            command: command,
                            dest: dest,
                            msgid: msgid)
-  
-  response = stub.check_id(iddata)
-
   @n = 0
   
   loop do
@@ -61,6 +58,7 @@ def main
   @recvdata.each do |s|
     puts "#{s.dest},#{s.T_1},#{s.T_2},#{s.T_3},#{s.T_4}"
   end
+  time = stub.check_id(iddata)
 end
 
 main
